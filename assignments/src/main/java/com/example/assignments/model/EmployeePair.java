@@ -4,13 +4,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class EmployeeCouple {
+public class EmployeePair {
 
 	private int firstEmployeeID;
 	private int secondEmployeeID;
 	private Set<Integer> projectIDs;
 
-	public EmployeeCouple(int firstEmployeeID, int secondEmployeeID) {
+	public EmployeePair(int firstEmployeeID, int secondEmployeeID) {
 		super();
 		this.firstEmployeeID = firstEmployeeID;
 		this.secondEmployeeID = secondEmployeeID;
@@ -38,10 +38,10 @@ public class EmployeeCouple {
 		if (obj == null) {
 			return false;
 		}
-		if (!EmployeeCouple.class.isAssignableFrom(obj.getClass())) {
+		if (!EmployeePair.class.isAssignableFrom(obj.getClass())) {
 			return false;
 		}
-		final EmployeeCouple other = (EmployeeCouple) obj;
+		final EmployeePair other = (EmployeePair) obj;
 
 		if (this.firstEmployeeID != other.firstEmployeeID && 
 				this.firstEmployeeID != other.secondEmployeeID) {

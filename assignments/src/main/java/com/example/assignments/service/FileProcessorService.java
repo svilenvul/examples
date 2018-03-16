@@ -17,7 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.example.assignments.model.EmployeeCouple;
+import com.example.assignments.model.EmployeePair;
 import com.example.assignments.model.ProjectAssignment;
 import com.example.assignments.model.Result;
 
@@ -34,7 +34,7 @@ public class FileProcessorService {
 
 		try {
 			List<ProjectAssignment> assignments = readFile(file);
-			Map<EmployeeCouple, Long> couples = getCouples(assignments);
+			Map<EmployeePair, Long> couples = getCouples(assignments);
 
 			List<Result> results = couples.entrySet().stream().map(mapper()).collect(Collectors.toList());
 			Collections.sort(results);
@@ -46,7 +46,7 @@ public class FileProcessorService {
 
 	}
 
-	private Function<? super Entry<EmployeeCouple, Long>, ? extends Result> mapper() {
+	private Function<? super Entry<EmployeePair, Long>, ? extends Result> mapper() {
 		return entry -> new Result(entry.getKey().getFirstEmployeeID(), entry.getKey().getSecondEmployeeID(),
 				entry.getKey().getProjectIDs().toString(), entry.getValue());
 	}
@@ -105,7 +105,7 @@ public class FileProcessorService {
 		return result;
 	}
 
-	private Map<EmployeeCouple, Long> getCouples(List<ProjectAssignment> assignments) {
+	private Map<EmployeePair, Long> getCouples(List<ProjectAssignment> assignments) {
 		Map<Integer, List<ProjectAssignment>> assignmentsProjects = new HashMap<>();
 
 		// Group assignments by project
@@ -121,7 +121,7 @@ public class FileProcessorService {
 			}
 		}
 
-		HashMap<EmployeeCouple, Long> mergedMap = new HashMap<>();
+		HashMap<EmployeePair, Long> mergedMap = new HashMap<>();
 
 		for (List<ProjectAssignment> assignemnts : assignmentsProjects.values()) {
 			mergedMap.putAll(processSingleProject(assignemnts));
@@ -131,8 +131,8 @@ public class FileProcessorService {
 
 	}
 
-	private HashMap<EmployeeCouple, Long> processSingleProject(List<ProjectAssignment> assignmentsInSingleProject) {
-		HashMap<EmployeeCouple, Long> map = new HashMap<>();
+	private HashMap<EmployeePair, Long> processSingleProject(List<ProjectAssignment> assignmentsInSingleProject) {
+		HashMap<EmployeePair, Long> map = new HashMap<>();
 
 		for (int i = 0; i < assignmentsInSingleProject.size(); i++) {
 			for (int l = i + 1; l < assignmentsInSingleProject.size(); l++) {
@@ -142,7 +142,7 @@ public class FileProcessorService {
 				long daysWorked = getWorkTogetherPeriod(first, second);
 
 				if (daysWorked > 0) {
-					EmployeeCouple couple = new EmployeeCouple(first.getEmployeeID(), second.getEmployeeID());
+					EmployeePair couple = new EmployeePair(first.getEmployeeID(), second.getEmployeeID());
 					couple.addProjectID(first.getProjectID());
 
 					if (map.containsKey(couple)) {

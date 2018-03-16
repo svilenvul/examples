@@ -5,24 +5,24 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class EmployeeCoupleTest {
+public class EmployeePairTest {
 
 	@Test
 	public void testEquality() {
-		EmployeeCouple first = new EmployeeCouple(1, 2);
-		EmployeeCouple same = new EmployeeCouple(2, 1);
+		EmployeePair first = new EmployeePair(1, 2);
+		EmployeePair same = new EmployeePair(2, 1);
 
 		assertTrue(first.equals(same));
 
-		EmployeeCouple different = new EmployeeCouple(5, 1);
+		EmployeePair different = new EmployeePair(5, 1);
 
 		assertFalse(first.equals(different));
 
-		EmployeeCouple otherDifferent = new EmployeeCouple(2, 12);
+		EmployeePair otherDifferent = new EmployeePair(2, 12);
 
 		assertFalse(first.equals(otherDifferent));
 
-		EmployeeCouple completelyDifferent = new EmployeeCouple(15, 12);
+		EmployeePair completelyDifferent = new EmployeePair(15, 12);
 
 		assertFalse(first.equals(completelyDifferent));
 
