@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox 
+xmlns:fx="http://javafx.com/fxml/1" 
+xmlns="http://javafx.com/javafx/8.0.65" 
+fx:controller="com.example.assignments.controllers.TextViewController">
+   <children>
+      <TextArea 
+      	fx:id="myTextArea" 
+      	onDragDropped="#dropping" 
+      	onDragOver="#draggingOver" 
+      	prefHeight="200.0" 
+      	prefWidth="600.0" />
+      <TableView fx:id="table" editable="true" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="600.0">
+      	<columns>
+          <TableColumn prefWidth="150.0" text="Employee ID #1," fx:id="firstEmpIdCol" />
+          <TableColumn prefWidth="150.0" text="Employee ID #2" fx:id="secondEmpIdCol" />
+          <TableColumn prefWidth="150.0" text="Project ID" fx:id="projectIdCol" />
+       	  <TableColumn prefWidth="150.0" text="Days worked" fx:id="daysWorkedCol" />
+      	</columns>
+      </TableView>
+   </children>
+</VBox>

@@ -30,7 +30,7 @@ public class FileProcessorService {
 	private DateTimeFormatter patternComma = DateTimeFormatter.ofPattern("yyyy,MM,dd");
 	private DateTimeFormatter patternSpaces = DateTimeFormatter.ofPattern("yyyy MM dd");
 
-	List<Result> processFiles(File file) {
+	public List<Result> processFiles(File file) {
 
 		try {
 			List<ProjectAssignment> assignments = readFile(file);
@@ -41,6 +41,7 @@ public class FileProcessorService {
 			return results;
 		} catch (IOException e) {
 			// TODO add Exception handling
+			e.printStackTrace();
 			return null;
 		}
 
