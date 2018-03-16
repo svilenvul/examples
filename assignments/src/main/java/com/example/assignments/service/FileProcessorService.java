@@ -40,7 +40,6 @@ public class FileProcessorService {
 			Collections.sort(results);
 			return results;
 		} catch (IOException e) {
-			// TODO add Exception handling
 			e.printStackTrace();
 			return null;
 		}

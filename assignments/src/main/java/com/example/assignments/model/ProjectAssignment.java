@@ -10,7 +10,6 @@ public class ProjectAssignment {
 	private LocalDate endDate;
 	
 	public ProjectAssignment(int employeeID, int projectID, LocalDate startDate, LocalDate endDate) {
-		super();
 		this.employeeID = employeeID;
 		this.projectID = projectID;
 		this.startDate = startDate;

@@ -67,7 +67,6 @@ public class TextViewController {
 		Result result = service.processFiles(file).get(0);
 
 		results.add(result);
-		
 	}
 
 	@FXML
