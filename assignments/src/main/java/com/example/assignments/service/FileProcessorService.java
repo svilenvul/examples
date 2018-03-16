@@ -1,18 +1,14 @@
 package com.example.assignments.service;
 
-import static java.util.Map.Entry.comparingByValue;
-import static java.util.stream.Collectors.toMap;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
-import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +24,11 @@ import com.example.assignments.model.Result;
 public class FileProcessorService {
 
 	private static final String NULL_DATE = "NULL";
+	private DateTimeFormatter patternColons = DateTimeFormatter.ofPattern("yyyy:MM:dd");
+	private DateTimeFormatter patternSlash = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+	private DateTimeFormatter patternDot = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+	private DateTimeFormatter patternComma = DateTimeFormatter.ofPattern("yyyy,MM,dd");
+	private DateTimeFormatter patternSpaces = DateTimeFormatter.ofPattern("yyyy MM dd");
 
 	List<Result> processFiles(File file) {
 
@@ -35,26 +36,20 @@ public class FileProcessorService {
 			List<ProjectAssignment> assignments = readFile(file);
 			Map<EmployeeCouple, Long> couples = getCouples(assignments);
 
-			List<Result> results = couples.entrySet()
-					.stream()
-					.map( mapper())
-					.collect(Collectors.toList());
+			List<Result> results = couples.entrySet().stream().map(mapper()).collect(Collectors.toList());
 			Collections.sort(results);
 			return results;
 		} catch (IOException e) {
+			// TODO add Exception handling
 			return null;
 		}
 
 	}
 
-
 	private Function<? super Entry<EmployeeCouple, Long>, ? extends Result> mapper() {
-		return entry -> new Result(entry.getKey().getFirstEmployeeID(),
-				entry.getKey().getSecondEmployeeID(),
-				entry.getKey().getProjectIDs().toString(),
-				entry.getValue());
+		return entry -> new Result(entry.getKey().getFirstEmployeeID(), entry.getKey().getSecondEmployeeID(),
+				entry.getKey().getProjectIDs().toString(), entry.getValue());
 	}
-	
 
 	private List<ProjectAssignment> readFile(File file) throws IOException {
 		try (Stream<String> lines = Files.lines(file.toPath())) {
@@ -68,9 +63,7 @@ public class FileProcessorService {
 		int employeeID = Integer.parseInt(fields[0].trim());
 		int projectID = Integer.parseInt(fields[1].trim());
 
-		// TODO think about more patterns
-
-		LocalDate startDate = LocalDate.parse(fields[2].trim());
+		LocalDate startDate = parseDate(fields[2].trim());
 		LocalDate endDate;
 
 		String endDateString = fields[3].trim();
@@ -78,10 +71,38 @@ public class FileProcessorService {
 		if (endDateString.equals(NULL_DATE)) {
 			endDate = LocalDate.now();
 		} else {
-			endDate = LocalDate.parse(endDateString);
+			endDate = parseDate(endDateString);
 		}
 
 		return new ProjectAssignment(employeeID, projectID, startDate, endDate);
+	}
+
+	private LocalDate parseDate(String string) {
+		LocalDate result = null;
+		try {
+			result = LocalDate.parse(string);
+		} catch (DateTimeParseException e) {
+			try {
+				result = LocalDate.parse(string, patternColons);
+			} catch (DateTimeParseException e1) {
+				try {
+					result = LocalDate.parse(string, patternComma);
+				} catch (DateTimeParseException e2) {
+					try {
+						result = LocalDate.parse(string, patternDot);
+					} catch (DateTimeParseException e3) {
+						try {
+							result = LocalDate.parse(string, patternSlash);
+						} catch (DateTimeParseException e4) {
+							result = LocalDate.parse(string, patternSpaces);
+						}
+					}
+				}
+
+			}
+		}
+
+		return result;
 	}
 
 	private Map<EmployeeCouple, Long> getCouples(List<ProjectAssignment> assignments) {
@@ -99,13 +120,12 @@ public class FileProcessorService {
 				assignmentsProjects.put(projectID, assignmentsInSameProject);
 			}
 		}
-		
+
 		HashMap<EmployeeCouple, Long> mergedMap = new HashMap<>();
 
 		for (List<ProjectAssignment> assignemnts : assignmentsProjects.values()) {
 			mergedMap.putAll(processSingleProject(assignemnts));
 		}
-		
 
 		return mergedMap;
 
@@ -113,7 +133,7 @@ public class FileProcessorService {
 
 	private HashMap<EmployeeCouple, Long> processSingleProject(List<ProjectAssignment> assignmentsInSingleProject) {
 		HashMap<EmployeeCouple, Long> map = new HashMap<>();
-		
+
 		for (int i = 0; i < assignmentsInSingleProject.size(); i++) {
 			for (int l = i + 1; l < assignmentsInSingleProject.size(); l++) {
 				ProjectAssignment first = assignmentsInSingleProject.get(i);
@@ -138,27 +158,27 @@ public class FileProcessorService {
 
 			}
 		}
-		
+
 		return map;
 	}
 
 	private long getWorkTogetherPeriod(ProjectAssignment first, ProjectAssignment second) {
 
-		if (first.getStartDate().isBefore(second.getStartDate()) && first.getEndDate().isAfter(second.getEndDate())) {
+		if (!first.getStartDate().isAfter(second.getStartDate()) && !first.getEndDate().isBefore(second.getEndDate())) {
 			return ChronoUnit.DAYS.between(second.getStartDate(), second.getEndDate());
 		}
 
-		if (second.getStartDate().isBefore(first.getStartDate()) && second.getEndDate().isAfter(first.getEndDate())) {
+		if (!second.getStartDate().isAfter(first.getStartDate()) && !second.getEndDate().isBefore(first.getEndDate())) {
 			return ChronoUnit.DAYS.between(first.getStartDate(), first.getEndDate());
 		}
 
-		if (first.getStartDate().isBefore(second.getStartDate()) && first.getEndDate().isBefore(second.getEndDate())
-				&& first.getEndDate().isAfter(second.getStartDate())) {
+		if (!first.getStartDate().isAfter(second.getStartDate()) && !first.getEndDate().isAfter(second.getEndDate())
+				&& !first.getEndDate().isBefore(second.getStartDate())) {
 			return ChronoUnit.DAYS.between(second.getStartDate(), first.getEndDate());
 		}
 
-		if (second.getStartDate().isBefore(first.getStartDate()) && second.getEndDate().isBefore(first.getEndDate())
-				&& second.getEndDate().isAfter(first.getStartDate())) {
+		if (!second.getStartDate().isAfter(first.getStartDate()) && !second.getEndDate().isAfter(first.getEndDate())
+				&& !second.getEndDate().isBefore(first.getStartDate())) {
 			return ChronoUnit.DAYS.between(first.getStartDate(), second.getEndDate());
 		}
 

@@ -1,7 +1,5 @@
 package com.example.assignments.model;
 
-import java.util.Set;
-
 public class Result implements Comparable<Result>{
 	
 	private int firstEmployeeID;
@@ -40,6 +38,6 @@ public class Result implements Comparable<Result>{
 
 	@Override
 	public int compareTo(Result o) {
-		return (int)this.period - (int)o.period;
+		return  (int)o.period -(int)this.period;
 	}
 }

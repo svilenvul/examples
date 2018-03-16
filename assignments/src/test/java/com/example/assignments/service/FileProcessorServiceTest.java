@@ -18,23 +18,19 @@ public class FileProcessorServiceTest {
 
 		List<Result> results = service.processFiles(testFile);
 
-		System.out.println(results.size());
-		assertTrue(results.size() == 1);
+		assertTrue(results.size() == 3);
 
-		//assertSingleResult(results, 1, 143,127 , "[12]", 65);
-		assertSingleResult(results, 0, 218,143 , "[10]", 30);
+		assertSingleResult(results, 0, 127,119 , "[12]", 91);
+		assertSingleResult(results, 1, 143,127 , "[12]", 67);
+		assertSingleResult(results, 2, 218,143 , "[10]", 31);
 	}
 
 	private void assertSingleResult(List<Result> results, int resultNumber, int emp1, int emp2, String projects,
 			int days) {
 		Result result = results.get(resultNumber);
-		System.out.println(result.getFirstEmployeeID());
 		assertTrue(result.getFirstEmployeeID() == emp1);
-		System.out.println(result.getSecondEmployeeID());
 		assertTrue(result.getSecondEmployeeID() == emp2);
-		System.out.println(result.getProjects());
 		assertTrue(result.getProjects().equals(projects));
-		System.out.println(result.getPeriod());
 		assertTrue(result.getPeriod() == days);
 
 	}
